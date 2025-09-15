@@ -28,6 +28,21 @@ export async function getNoteById(req, res, id) {
     return note;
 }
 
+
+export async function editNote(req, res, id, title, content) {
+  const old_note = await getNoteById(req, res, id);
+  notes = await readNotes();
+  index = notes.findIndex(n => n.id === parseInt(id))
+  if (!old_note) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Note not found" }));
+  }
+  const new_note = { ...old_note, title, content, updated_at: new Date().toISOString() };
+  notes[index] = new_note;
+  await writeNotes(notes);
+}
+
+
 export async function deleteNote(req,res,id){
     const notes = await readNotes();
     const note = await getNoteById(req,res,id);
