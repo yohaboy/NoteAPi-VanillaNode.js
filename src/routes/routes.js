@@ -1,4 +1,4 @@
-import { getNotes, addNote , editNote , deleteNote} from "./controller.js";
+import { getNotes, addNote , editNote , deleteNote} from "../controllers/controller.js";
 import url from "url";
 
 const routes = (req, res) => {

@@ -1,6 +1,10 @@
 import fs from "fs/promises"
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const file = "./notes.json";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const file = join(__dirname, '..', '..', 'data', 'notes.json');
 
 export async function readNotes() {
     try {

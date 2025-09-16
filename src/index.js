@@ -1,5 +1,5 @@
 import http from "http";
-import routes from "./routes.js";
+import routes from "./routes/routes.js";
 
 const PORT = 5173;
 
