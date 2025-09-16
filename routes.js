@@ -1,4 +1,4 @@
-import { getNotes, addNote } from "./controller.js";
+import { getNotes, addNote , editNote , deleteNote} from "./controller.js";
 import url from "url";
 
 const routes = (req, res) => {
@@ -8,7 +8,13 @@ const routes = (req, res) => {
     getNotes(req, res);
   } else if (req.method === "POST" && parsedUrl.pathname === "/notes") {
     addNote(req, res);
-  } else {
+  } else if (req.method === "PUT" && parsedUrl.pathname.match(/^\/notes\/\d+$/)) {
+    editNote(req, res, parsedUrl.pathname.split("/")[2]);
+  } else if (req.method === "DELETE" && parsedUrl.pathname.match(/^\/notes\/\d+$/)) {
+    deleteNote(req, res, parsedUrl.pathname.split("/")[2]);
+  }
+
+  else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Not Found" }));
   }

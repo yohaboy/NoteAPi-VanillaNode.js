@@ -29,17 +29,37 @@ export async function getNoteById(req, res, id) {
 }
 
 
-export async function editNote(req, res, id, title, content) {
-  const old_note = await getNoteById(req, res, id);
-  notes = await readNotes();
-  index = notes.findIndex(n => n.id === parseInt(id))
-  if (!old_note) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ message: "Note not found" }));
-  }
-  const new_note = { ...old_note, title, content, updated_at: new Date().toISOString() };
-  notes[index] = new_note;
-  await writeNotes(notes);
+export async function editNote(req, res, id) {
+  let body = "";
+
+  req.on("data", chunk => {
+    body += chunk.toString();
+  });
+  
+  req.on("end", async () => {
+    try {
+      const old_note = await getNoteById(req, res, id);
+      const notes = await readNotes();
+      const index = notes.findIndex(n => n.id === parseInt(id));
+      const { title, content } = JSON.parse(body);
+
+      if (!old_note) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "Note not found" }));
+      }
+
+      const new_note = { ...old_note , title , content , updated_at: new Date().toISOString() };
+      notes[index] = new_note;
+      await writeNotes(notes);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(new_note));
+    }
+    catch (err) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Invalid JSON" , body : body}));
+    }
+  });
+
 }
 
 
@@ -82,7 +102,7 @@ export async function addNote(req, res) {
       res.end(JSON.stringify(newNote));
     } catch (err) {
       res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Invalid JSON" }));
+      res.end(JSON.stringify({ message: "Invalid JSON"  , body : body}));
     }
   });
 }
